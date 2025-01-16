@@ -1,3 +1,4 @@
+# coding=utf-8
 from nonebot import logger
 from .draw import template_1
 

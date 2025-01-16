@@ -1,3 +1,4 @@
+# coding=utf-8
 from nonebot import get_plugin_config, logger
 from pydantic import BaseModel
 from pathlib import Path
