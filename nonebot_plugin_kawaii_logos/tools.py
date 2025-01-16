@@ -208,7 +208,7 @@ async def draw_text(
         font_list = [fontfile] + default_font + ["no_font"]
         for font in font_list:
             if font == "no_font":
-                # logger.error(f"字体加载失败，请安装字体{font_list[0]}")
+                logger.warning(f"{fontfile}字体加载失败，将使用默认字体")
                 # raise f"字体加载失败，请安装字体"
                 fontfile = font_list[0]
                 break
