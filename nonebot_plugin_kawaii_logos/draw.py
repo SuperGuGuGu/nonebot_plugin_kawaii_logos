@@ -1,5 +1,6 @@
 # coding=utf-8
 import os
+import random
 import cv2
 import numpy as np
 from PIL import Image
@@ -25,6 +26,27 @@ async def template_1(logo_data: dict[str, str]) -> Image.Image:
     image_size = (1000, 500)
     image = Image.new("RGBA", image_size, "#FFFFFF")
 
+    size_list = [random.randint(110, 190) for _ in range(len(logo_data["标题"]))]
+    rotate_list = [random.randint(-20, 20) for _ in range(len(logo_data["标题"]))]
+    y_list = [random.randint(-20, 20) for _ in range(len(logo_data["标题"]))]
+
+    image_size_list = [2, 1, 0, -1]
+    image_color_list = ["#7c71ec", "#fff", "#7c71ec", "#fff"]
+    for i, image_size in enumerate(image_size_list):
+        color = image_color_list[i]
+        x, y = 0, 100
+        for i_t, text in enumerate(logo_data["标题"]):
+            rotate = rotate_list[i_t]
+            size = size_list[i_t]
+
+            paste_alpha = await kawaii_text_to_image(text, image_size)
+            paste_alpha = paste_alpha.resize((size, size))
+            paste_alpha = paste_alpha.rotate(rotate)
+            image_color = Image.new("RGBA", paste_alpha.size, color)
+            image.paste(image_color, (x, y + y_list[i_t]), mask=paste_alpha)
+
+            x += int(size * 0.7)
+
     return image
 
 
@@ -49,13 +71,13 @@ async def kawaii_text_to_image(text: str, size=0) -> Image.Image:
             return Image.new("RGBA", (200, 200), (0, 0, 0, 0))
         for i, t in enumerate(text_full + text_half):
             if t == text:
-                text = i
-        url = f"https://cdn.kanon.ink/api/image?imageid=knapi-kawaii_logos-{text}_-1.png"
+                text = i + 1
+        url = f"https://cdn.kanon.ink/api/image?imageid=knapi-kawaii_logos-{text}_{size}.png"
         try:
             image = await load_image(url, cache_image=False)
+            save_image(image, text_image_path.parent, text_image_path.name, mode="png")
         except Exception as e:
-            logger.error(url)
-            logger.error("获取高光图片失败")
+            logger.error("请求高光图片失败")
             logger.error(e)
             image = Image.new("RGBA", (200, 200), (0, 0, 0, 0))
         return image
