@@ -20,6 +20,13 @@ class Config(BaseModel):
     ...
 
 
+try:
+    plugin_config = get_plugin_config(Config)
+    # qb_url = plugin_config.qbm_url
+except Exception as e:
+    pass
+
+
 menu_data = [
     {
         "trigger_method": "qb帮助",
@@ -28,6 +35,3 @@ menu_data = [
         "brief_des": "qb帮助",
     }
 ]
-
-plugin_config = get_plugin_config(Config)
-# qb_url = plugin_config.qbm_url

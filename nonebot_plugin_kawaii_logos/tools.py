@@ -1,4 +1,5 @@
 # coding=utf-8
+import base64
 import io
 import json
 import re
@@ -25,7 +26,7 @@ for font_path in system_font_list:
 
 def save_image(
         image,
-        image_path: str = None,
+        image_path: str | Path = None,
         image_name: int | str = None,
         to_bytes: bool = False,
         mode: str = "jpg"):
@@ -334,7 +335,7 @@ async def draw_text(
     return image
 
 
-async def load_image(path: str, size=None, mode=None, cache_image=True):
+async def load_image(path: str | Image.Image | Path, size=None, mode=None, cache_image=True):
     """
     读取图片或请求网络图片
     :param path: 图片路径/图片url
@@ -348,7 +349,7 @@ async def load_image(path: str, size=None, mode=None, cache_image=True):
     if mode is None:
         mode = "r"
     try:
-        if path.startswith("http"):
+        if type(path) is str and path.startswith("http"):
             if cache_image is False:
                 image = await connect_api("image", path)
             else:
@@ -364,7 +365,7 @@ async def load_image(path: str, size=None, mode=None, cache_image=True):
 
             return image
         else:
-            if path.startswith("{cache_dir}"):
+            if type(path) is str and path.startswith("{cache_dir}"):
                 image_path = plugin_cache_dir / Path(path.removeprefix("{cache_dir}"))
                 if not os.path.exists(image_path):
                     raise "图片不存在"
@@ -519,3 +520,16 @@ async def mix_image(image_1, image_2, mix_type=1):
             images.alpha_composite(image_2, (0, y1_m))
             return images
     raise "未知的合并图像方式"
+
+
+def text_to_b64(text: str, replace=False) -> str:
+    b64 = str(base64.b64encode(text.encode('UTF-8')), encoding='UTF-8')
+    if replace is True:
+        return b64.replace("+", "-").replace("/", "_")
+    return b64
+
+
+def b64_to_text(b64_text: str, replace=False) -> str:
+    if replace is True:
+        b64_text = b64_text.replace("-", "+").replace("_", "/")
+    return base64.b64decode(b64_text).decode('UTF-8')
