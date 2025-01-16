@@ -24,7 +24,7 @@ async def template_1(logo_data: dict[str, str]) -> Image.Image:
     :return:
     """
     image_size = (1000, 500)
-    image = Image.new("RGBA", image_size, "#FFFFFF")
+    image = Image.new("RGBA", image_size, "#FFFFFF00")
 
     size_list = [random.randint(110, 190) for _ in range(len(logo_data["标题"]))]
     rotate_list = [random.randint(-20, 20) for _ in range(len(logo_data["标题"]))]
